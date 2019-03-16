@@ -1,51 +1,35 @@
 import React, { Component } from "react";
 import "./App.css";
 import Movie from "./Movie";
-import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from "constants";
+// import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from "constants";
 
 class App extends Component {
-  state = {};
 
+  state = {}
   componentDidMount() {
-    setTimeout(() => {
-      this.setState({
-        movies: [
-          {
-            title: "Matrix",
-            poster:
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ24-0aPo40r7Q5hM-ZrOl8cPGVnMR3Tq-YgIQqozLCE2ECPNMAsg"
-          },
-          {
-            title: "Full Metal Jacket",
-            poster:
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXuhb82s2uxh0qAp8uKusVufQzEypjgVLCgBojmsG03tA1kNVH5g"
-          },
-          {
-            title: "Oldboy",
-            poster:
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ24-0aPo40r7Q5hM-ZrOl8cPGVnMR3Tq-YgIQqozLCE2ECPNMAsg"
-          },
-          {
-            title: "Star Wars",
-            poster:
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXuhb82s2uxh0qAp8uKusVufQzEypjgVLCgBojmsG03tA1kNVH5g"
-          },
-          {
-            title: "Trainspotting",
-            poster:
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXuhb82s2uxh0qAp8uKusVufQzEypjgVLCgBojmsG03tA1kNVH5g"
-          }
-        ]
-      });
-    }, 5000);
+    this._getMovies()
   }
 
   _renderMovies = () => {
-    const movies = this.state.movies.map((movie, index) => {
-      return <Movie title={movie.title} poster={movie.poster} key={index} />;
+    const movies = this.state.movies.map(movie => {
+      return <Movie title={movie.title} poster={movie.large_cover_image} key={movie.id} />;
     });
     return movies;
   };
+
+  _getMovies = async () => {
+    const movies = await this._callApi()
+    this.setState({
+      movies
+    })
+  }
+
+  _callApi = () => {
+    return fetch("https://yts.am/api/v2/list_movies.json?sort_by=rating")
+      .then(potato => potato.json())
+      .then(json => json.data.movies)
+      .catch(err => console.log(err))
+  }
 
   render() {
     return (
